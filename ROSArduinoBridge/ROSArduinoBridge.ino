@@ -63,13 +63,13 @@
    //#define ARDUINO_ENC_COUNTER
 
    /* L298 Motor driver*/
-   //#define L298_MOTOR_DRIVER
+   #define L298_MOTOR_DRIVER
 
    /* Encoders directly attached to ESP32 board */
    #define ESP32_ENC_COUNTER
 
    /* Cytron MDD3A Motor driver*/
-   #define CYTRON_MDD3A
+   //#define CYTRON_MDD3A
    
 #endif
 
@@ -77,7 +77,7 @@
 #undef USE_SERVOS     // Disable use of PWM servos
 
 /* Serial port baud rate */
-#define BAUDRATE     115200
+#define BAUDRATE     57600
 
 /* Maximum PWM signal */
 #define MAX_PWM        255
@@ -250,6 +250,34 @@ void runCommand() {
     Serial.println("Invalid Command");
     break;
   }
+}
+
+/* ESP-NOW Additions Start Here */
+
+// Include for ESP-NOW
+#include <esp_now.h>
+#include <WiFi.h>
+
+// Same Message struct as sender
+typedef struct {
+  char command[20];
+  int value;
+} Message;
+
+// Callback when ESP-NOW data is received
+void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len) {
+  Message incomingMsg;
+  memcpy(&incomingMsg, incomingData, sizeof(incomingMsg));
+  
+  // Forward to ROS2 via serial in a custom format that your ROS2 node can parse
+  // Example: !ESP_NOW:START_AUTONOMOUS:1
+  Serial.print("!ESP_NOW:");
+  Serial.print(incomingMsg.command);
+  Serial.print(":");
+  Serial.println(incomingMsg.value);
+  
+  // Optional: Directly act on the robot if not relying on ROS2 (e.g., emergency stop)
+  // if (strcmp(incomingMsg.command, "STOP_ROBOT") == 0) { setMotorSpeeds(0, 0); }
 }
 
 /* Setup function--runs once at startup. */
