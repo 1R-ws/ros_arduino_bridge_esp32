@@ -77,7 +77,7 @@
 #undef USE_SERVOS     // Disable use of PWM servos
 
 /* Serial port baud rate */
-#define BAUDRATE     57600
+#define BAUDRATE     115200
 
 /* Maximum PWM signal */
 #define MAX_PWM        255
@@ -189,8 +189,15 @@ void runCommand() {
     else if (arg2 == 1) pinMode(arg1, OUTPUT);
     Serial.println("OK");
     break;
-  case PING:
-    Serial.println(Ping(arg1));
+  case READ_WEIGHT:  // 'g' command
+    {
+      float weight = readWeight();
+      if (weight < -9000.0) {          // Error check
+        Serial.println("ERROR");
+      } else {
+        Serial.println(weight, 2);     // Print with 2 decimal places
+      }
+    }
     break;
 #ifdef USE_SERVOS
   case SERVO_WRITE:
@@ -264,21 +271,6 @@ typedef struct {
   int value;
 } Message;
 
-// Callback when ESP-NOW data is received
-void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len) {
-  Message incomingMsg;
-  memcpy(&incomingMsg, incomingData, sizeof(incomingMsg));
-  
-  // Forward to ROS2 via serial in a custom format that your ROS2 node can parse
-  // Example: !ESP_NOW:START_AUTONOMOUS:1
-  Serial.print("!ESP_NOW:");
-  Serial.print(incomingMsg.command);
-  Serial.print(":");
-  Serial.println(incomingMsg.value);
-  
-  // Optional: Directly act on the robot if not relying on ROS2 (e.g., emergency stop)
-  // if (strcmp(incomingMsg.command, "STOP_ROBOT") == 0) { setMotorSpeeds(0, 0); }
-}
 
 /* Setup function--runs once at startup. */
 void setup() {
@@ -323,6 +315,8 @@ void setup() {
           servoInitPosition[i]);
     }
   #endif
+
+  initWeightSensor();
 }
 
 /* Enter the main loop.  Read and parse input from the serial port
