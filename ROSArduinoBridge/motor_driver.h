@@ -3,10 +3,10 @@
    *************************************************************/
 
 #ifdef L298_MOTOR_DRIVER
-  #define RIGHT_MOTOR_BACKWARD 25
-  #define LEFT_MOTOR_BACKWARD  14
-  #define RIGHT_MOTOR_FORWARD  27
-  #define LEFT_MOTOR_FORWARD   26
+  #define RIGHT_MOTOR_BACKWARD 32
+  #define LEFT_MOTOR_BACKWARD  18
+  #define RIGHT_MOTOR_FORWARD  33
+  #define LEFT_MOTOR_FORWARD   19
   #define RIGHT_MOTOR_ENABLE 13
   #define LEFT_MOTOR_ENABLE 12
 #endif
