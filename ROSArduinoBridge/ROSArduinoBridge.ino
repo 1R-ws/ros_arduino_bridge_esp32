@@ -69,7 +69,7 @@
    #define ESP32_ENC_COUNTER
 
    /* Cytron MDD3A Motor driver*/
-   //#define CYTRON_MDD3A
+  //  #define CYTRON_MDD3A
    
 #endif
 
@@ -93,6 +93,9 @@
 
 /* Sensor functions */
 #include "sensors.h"
+
+/* esp_now functions */
+#include "esp_now_handler.h"
 
 /* Include servo support if required */
 #ifdef USE_SERVOS
@@ -259,17 +262,6 @@ void runCommand() {
   }
 }
 
-/* ESP-NOW Additions Start Here */
-
-// Include for ESP-NOW
-#include <esp_now.h>
-#include <WiFi.h>
-
-// Same Message struct as sender
-typedef struct {
-  char command[20];
-  int value;
-} Message;
 
 
 /* Setup function--runs once at startup. */
@@ -317,6 +309,8 @@ void setup() {
   #endif
 
   initWeightSensor();
+
+  initEspNowReceiver();
 }
 
 /* Enter the main loop.  Read and parse input from the serial port
