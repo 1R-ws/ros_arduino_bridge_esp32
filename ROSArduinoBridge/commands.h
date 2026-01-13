@@ -20,6 +20,8 @@
 #define DIGITAL_WRITE  'w'
 #define ANALOG_WRITE   'x'
 #define READ_WEIGHT    'g'
+#define PAPER_REQUEST  'q'   
+#define PAPER_CANCEL   'f'  
 #define LEFT            0
 #define RIGHT           1
 
